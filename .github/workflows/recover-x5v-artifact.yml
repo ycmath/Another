@@ -1,7 +1,7 @@
 name: Recover RCPL-X5V artifact
 
 on:
-  push:
+  pull_request:
     paths:
       - '.github/workflows/recover-x5v-artifact.yml'
   workflow_dispatch:
