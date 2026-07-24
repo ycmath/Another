@@ -1,0 +1,38 @@
+name: Recover RCPL-X6S v3 artifact
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/recover-x6s-v3.yml'
+  push:
+    paths:
+      - '.github/workflows/recover-x6s-v3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ARTIFACT_URL: https://litter.catbox.moe/27zk40.zip
+  EXPECTED_SHA256: 941aa48b155bddc6e98f90536f6db5a618df8cea879b41535f09c624037ab3cf
+  FILE_NAME: rcpl_x6s_20260724_v3.zip
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and verify frozen X6S result
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 5 --retry-all-errors \
+            -A 'Mozilla/5.0' \
+            --output "$FILE_NAME" "$ARTIFACT_URL"
+          echo "$EXPECTED_SHA256  $FILE_NAME" | sha256sum --check --strict
+          unzip -t "$FILE_NAME"
+      - name: Upload verified workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rcpl-x6s-v3-result
+          path: rcpl_x6s_20260724_v3.zip
+          if-no-files-found: error
+          retention-days: 2
